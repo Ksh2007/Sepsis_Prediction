@@ -49,17 +49,13 @@ def prediction_sepsis(input_data_scaled_df: pd.DataFrame):
 @app.get("/")
 async def root():
     return "Sepsis Classification Project"
-
-# FIX: Renamed function to avoid infinite loop recursion crash
 @app.post("/predict/", response_model=OutputData)
 async def predict_sepsis_endpoint(input_data: InputData):
     try:
         input_data_scaled_df = preprocess_data(input_data)
-        # FIX: Calls prediction_sepsis instead of calling itself
         result_dict = prediction_sepsis(input_data_scaled_df)
         return {"Sepsis": result_dict["prediction"]}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 if __name__ == "__main__":
-    # Run the FastAPI application on the local host and port 7860
     uvicorn.run(app, host="0.0.0.0", port=7860)
